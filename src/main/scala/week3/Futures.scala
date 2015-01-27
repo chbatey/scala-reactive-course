@@ -30,10 +30,10 @@ object Futures extends App with LazyLogging {
 
   def retry[T](noTimes: Int)(block: =>Future[T]): Future[T] = {
     val ns: Iterator[Int] = (1 to noTimes).iterator
-    val attempts: Iterator[Future[T]] = ns.map( (n) => () => block)
+    val attempts: Iterator[() => Future[T]] = ns.map(_=> ()=>block)
     val failed = Future.failed(new Exception("i gave up"))
 
 
-    attempts.foldLeft(failed)((a, block) => a recoverWith { block() })
+    attempts.foldRight(() =>failed)((block, a) => block().fallbackTo { a() })
   }
 }
