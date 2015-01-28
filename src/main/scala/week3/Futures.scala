@@ -33,7 +33,6 @@ object Futures extends App with LazyLogging {
     val attempts: Iterator[() => Future[T]] = ns.map(_=> ()=>block)
     val failed = Future.failed(new Exception("i gave up"))
 
-
-    attempts.foldRight(() =>failed)((block, a) => block().fallbackTo { a() })
+    ???
   }
 }
